@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Calidad - Scotiabank Call Center</title>
+    <style>
+        :root {
+            --color-background: #fcfcf9;
+            --color-surface: #fffffe;
+            --color-text: #134252;
+            --color-text-secondary: #626c71;
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-success: #21808d;
+            --color-warning: #a84b2f;
+            --color-error: #c0152f;
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: #1f2121;
+                --color-surface: #262828;
+                --color-text: #f5f5f5;
+                --color-text-secondary: rgba(167, 169, 169, 0.7);
+                --color-primary: #32b8c6;
+                --color-primary-hover: #2da6b2;
+                --color-border: rgba(119, 124, 124, 0.3);
+                --color-success: #32b8c6;
+                --color-warning: #e68161;
+                --color-error: #ff5459;
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: var(--color-surface);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .upload-section {
+            background: var(--color-surface);
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+            border: 2px dashed var(--color-border);
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: var(--color-primary);
+        }
+
+        .upload-section.dragover {
+            background: var(--color-bg-1);
+            border-color: var(--color-primary);
+        }
+
+        .file-input-wrapper {
+            display: inline-block;
+            position: relative;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(94, 82, 64, 0.12);
+            color: var(--color-text);
+            margin-left: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(94, 82, 64, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--color-surface);
+            color: var(--color-text);
+        }
+
+        .search-box:focus {
+            outline: 2px solid var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 10px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--color-surface);
+            color: var(--color-text);
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card h3 {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--color-surface);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            min-height: 400px;
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .table-container {
+            background: var(--color-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--color-bg-1);
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--color-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        tbody tr:hover {
+            background: var(--color-bg-1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(33, 128, 141, 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(33, 128, 141, 0.25);
+        }
+
+        .badge-warning {
+            background: rgba(168, 75, 47, 0.15);
+            color: var(--color-warning);
+            border: 1px solid rgba(168, 75, 47, 0.25);
+        }
+
+        .badge-error {
+            background: rgba(192, 21, 47, 0.15);
+            color: var(--color-error);
+            border: 1px solid rgba(192, 21, 47, 0.25);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        #fileName {
+            margin-top: 12px;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 12px;
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Dashboard de Calidad - Scotiabank</h1>
+        <p>Análisis de Auditorías de Calidad | Call Center</p>
+    </div>
+
+    <div class="upload-section" id="uploadSection">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <h3 style="margin-bottom: 8px;">Cargar Archivo de Datos</h3>
+        <p style="color: var(--color-text-secondary); margin-bottom: 16px;">Arrastra un archivo Excel o CSV aquí, o haz clic para seleccionar</p>
+        <div class="file-input-wrapper">
+            <button class="btn">Seleccionar Archivo</button>
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+        </div>
+        <div id="fileName"></div>
+        <div class="loading" id="loading">Procesando archivo...</div>
+    </div>
+
+    <div id="dashboardContent" style="display: none;">
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="charts-grid" id="chartsGrid"></div>
+
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Buscar en la tabla...">
+            <div class="filter-group">
+                <select id="filterColumn">
+                    <option value="">Filtrar por columna...</option>
+                </select>
+                <button class="btn btn-secondary" onclick="exportToCSV()">📥 Exportar CSV</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let originalData = [];
+        let currentData = [];
+        let headers = [];
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const fileName = document.getElementById('fileName');
+        const loading = document.getElementById('loading');
+        const searchBox = document.getElementById('searchBox');
+        const filterColumn = document.getElementById('filterColumn');
+
+        // Drag and drop
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            fileName.textContent = `Archivo seleccionado: ${file.name}`;
+            loading.style.display = 'block';
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                    if (jsonData.length > 0) {
+                        headers = jsonData[0];
+                        const rows = jsonData.slice(1).filter(row => row.some(cell => cell !== null && cell !== ''));
+                        
+                        originalData = rows.map(row => {
+                            const obj = {};
+                            headers.forEach((header, index) => {
+                                obj[header] = row[index] !== undefined ? row[index] : '';
+                            });
+                            return obj;
+                        });
+
+                        currentData = [...originalData];
+                        renderDashboard();
+                        loading.style.display = 'none';
+                        dashboardContent.style.display = 'block';
+                    }
+                } catch (error) {
+                    alert('Error al procesar el archivo. Asegúrate de que sea un Excel o CSV válido.');
+                    loading.style.display = 'none';
+                }
+            };
+
+            if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+                reader.onload = (e) => {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n');
+                    headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+                    
+                    originalData = lines.slice(1)
+                        .filter(line => line.trim())
+                        .map(line => {
+                            const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                            const obj = {};
+                            headers.forEach((header, index) => {
+                                obj[header] = values[index] || '';
+                            });
+                            return obj;
+                        });
+
+                    currentData = [...originalData];
+                    renderDashboard();
+                    loading.style.display = 'none';
+                    dashboardContent.style.display = 'block';
+                };
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function renderDashboard() {
+            renderStats();
+            renderCharts();
+            renderTable();
+            populateFilters();
+        }
+
+        function renderStats() {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            // Estadísticas generales
+            const totalRecords = currentData.length;
+            
+            // Buscar columnas comunes de calidad
+            const scoreColumn = headers.find(h => 
+                h.toLowerCase().includes('calidad') || 
+                h.toLowerCase().includes('score') || 
+                h.toLowerCase().includes('puntuación') ||
+                h.toLowerCase().includes('puntaje')
+            );
+
+            const statusColumn = headers.find(h => 
+                h.toLowerCase().includes('estado') || 
+                h.toLowerCase().includes('status') ||
+                h.toLowerCase().includes('resultado')
+            );
+
+            let statsHTML = `
+                <div class="stat-card">
+                    <h3>Total de Registros</h3>
+                    <div class="value">${totalRecords}</div>
+                    <div class="label">Auditorías realizadas</div>
+                </div>
+            `;
+
+            if (scoreColumn) {
+                const scores = currentData
+                    .map(row => parseFloat(row[scoreColumn]))
+                    .filter(score => !isNaN(score));
+                
+                if (scores.length > 0) {
+                    const avgScore = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+                    const maxScore = Math.max(...scores).toFixed(1);
+                    const minScore = Math.min(...scores).toFixed(1);
+
+                    statsHTML += `
+                        <div class="stat-card">
+                            <h3>Promedio de Calidad</h3>
+                            <div class="value">${avgScore}%</div>
+                            <div class="label">Calificación promedio</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Calificación Máxima</h3>
+                            <div class="value">${maxScore}%</div>
+                            <div class="label">Mejor resultado</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Calificación Mínima</h3>
+                            <div class="value">${minScore}%</div>
+                            <div class="label">Resultado a mejorar</div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (statusColumn) {
+                const approved = currentData.filter(row => {
+                    const status = String(row[statusColumn]).toLowerCase();
+                    return status.includes('aprobad') || status.includes('cumple') || status.includes('exitoso');
+                }).length;
+
+                const approvalRate = ((approved / totalRecords) * 100).toFixed(1);
+
+                statsHTML += `
+                    <div class="stat-card">
+                        <h3>Tasa de Aprobación</h3>
+                        <div class="value">${approvalRate}%</div>
+                        <div class="label">${approved} de ${totalRecords} aprobados</div>
+                    </div>
+                `;
+            }
+
+            statsGrid.innerHTML = statsHTML;
+        }
+
+        function renderCharts() {
+            const chartsGrid = document.getElementById('chartsGrid');
+            
+            // Buscar columnas relevantes
+            const scoreColumn = headers.find(h => 
+                h.toLowerCase().includes('calidad') || 
+                h.toLowerCase().includes('score') || 
+                h.toLowerCase().includes('puntuación') ||
+                h.toLowerCase().includes('puntaje')
+            );
+
+            const statusColumn = headers.find(h => 
+                h.toLowerCase().includes('estado') || 
+                h.toLowerCase().includes('status') ||
+                h.toLowerCase().includes('resultado')
+            );
+
+            const dateColumn = headers.find(h => 
+                h.toLowerCase().includes('fecha') || 
+                h.toLowerCase().includes('date')
+            );
+
+            const agentColumn = headers.find(h => 
+                h.toLowerCase().includes('agente') || 
+                h.toLowerCase().includes('asesor') ||
+                h.toLowerCase().includes('ejecutivo') ||
+                h.toLowerCase().includes('operador')
+            );
+
+            let chartsHTML = '';
+
+            // Gráfico 1: Distribución de Estados
+            if (statusColumn) {
+                chartsHTML += `
+                    <div class="chart-card">
+                        <h3>📊 Distribución por Estado</h3>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Gráfico 2: Tendencia de Calidad en el Tiempo
+            if (scoreColumn && dateColumn) {
+                chartsHTML += `
+                    <div class="chart-card">
+                        <h3>📈 Tendencia de Calidad</h3>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Gráfico 3: Top Agentes por Calidad
+            if (scoreColumn && agentColumn) {
+                chartsHTML += `
+                    <div class="chart-card">
+                        <h3>🏆 Top 10 Agentes por Calidad</h3>
+                        <div class="chart-container">
+                            <canvas id="agentsChart"></canvas>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Gráfico 4: Distribución de Calificaciones
+            if (scoreColumn) {
+                chartsHTML += `
+                    <div class="chart-card">
+                        <h3>📉 Distribución de Calificaciones</h3>
+                        <div class="chart-container">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                `;
+            }
+
+            chartsGrid.innerHTML = chartsHTML;
+
+            // Renderizar gráficos con Chart.js
+            setTimeout(() => {
+                if (statusColumn) {
+                    console.log('Renderizando gráfico de estados...');
+                    renderStatusChart(statusColumn);
+                }
+                if (scoreColumn && dateColumn) {
+                    console.log('Renderizando gráfico de tendencia...');
+                    renderTrendChart(scoreColumn, dateColumn);
+                }
+                if (scoreColumn && agentColumn) {
+                    console.log('Renderizando gráfico de agentes...');
+                    renderAgentsChart(scoreColumn, agentColumn);
+                }
+                if (scoreColumn) {
+                    console.log('Renderizando gráfico de distribución...');
+                    renderDistributionChart(scoreColumn);
+                }
+            }, 250);
+        }
+
+        function renderStatusChart(statusColumn) {
+            const statusCounts = {};
+            currentData.forEach(row => {
+                const status = String(row[statusColumn]);
+                statusCounts[status] = (statusCounts[status] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('statusChart');
+            if (!ctx) {
+                console.error('No se encontró el canvas statusChart');
+                return;
+            }
+
+            // Destruir gráfico anterior si existe
+            const existingChart = Chart.getChart(ctx);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            'rgba(33, 128, 141, 0.8)',
+                            'rgba(192, 21, 47, 0.8)',
+                            'rgba(168, 75, 47, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: 'var(--color-surface)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'var(--color-text)',
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTrendChart(scoreColumn, dateColumn) {
+            const dateScores = {};
+            currentData.forEach(row => {
+                const date = String(row[dateColumn]).split(' ')[0];
+                const score = parseFloat(row[scoreColumn]);
+                if (!isNaN(score)) {
+                    if (!dateScores[date]) dateScores[date] = [];
+                    dateScores[date].push(score);
+                }
+            });
+
+            const sortedDates = Object.keys(dateScores).sort();
+            const avgScores = sortedDates.map(date => {
+                const scores = dateScores[date];
+                return scores.reduce((a, b) => a + b, 0) / scores.length;
+            });
+
+            const ctx = document.getElementById('trendChart');
+            if (!ctx) {
+                console.error('No se encontró el canvas trendChart');
+                return;
+            }
+
+            // Destruir gráfico anterior si existe
+            const existingChart = Chart.getChart(ctx);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{
+                        label: 'Calidad Promedio',
+                        data: avgScores,
+                        borderColor: 'rgba(33, 128, 141, 1)',
+                        backgroundColor: 'rgba(33, 128, 141, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'var(--color-text)',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: 'var(--color-text-secondary)' },
+                            grid: { color: 'var(--color-border)' }
+                        },
+                        x: {
+                            ticks: { color: 'var(--color-text-secondary)' },
+                            grid: { color: 'var(--color-border)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAgentsChart(scoreColumn, agentColumn) {
+            const agentScores = {};
+            currentData.forEach(row => {
+                const agent = String(row[agentColumn]);
+                const score = parseFloat(row[scoreColumn]);
+                if (!isNaN(score)) {
+                    if (!agentScores[agent]) agentScores[agent] = [];
+                    agentScores[agent].push(score);
+                }
+            });
+
+            const agentAvgs = Object.entries(agentScores).map(([agent, scores]) => ({
+                agent,
+                avg: scores.reduce((a, b) => a + b, 0) / scores.length
+            }));
+
+            agentAvgs.sort((a, b) => b.avg - a.avg);
+            const top10 = agentAvgs.slice(0, 10);
+
+            const ctx = document.getElementById('agentsChart');
+            if (!ctx) {
+                console.error('No se encontró el canvas agentsChart');
+                return;
+            }
+
+            // Destruir gráfico anterior si existe
+            const existingChart = Chart.getChart(ctx);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(a => a.agent),
+                    datasets: [{
+                        label: 'Calidad Promedio',
+                        data: top10.map(a => a.avg.toFixed(1)),
+                        backgroundColor: 'rgba(33, 128, 141, 0.8)',
+                        borderColor: 'rgba(33, 128, 141, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: 'var(--color-text-secondary)' },
+                            grid: { color: 'var(--color-border)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: 'var(--color-text-secondary)',
+                                font: { size: 11 }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDistributionChart(scoreColumn) {
+            const ranges = { '0-60': 0, '61-70': 0, '71-80': 0, '81-90': 0, '91-100': 0 };
+            
+            currentData.forEach(row => {
+                const score = parseFloat(row[scoreColumn]);
+                if (!isNaN(score)) {
+                    if (score <= 60) ranges['0-60']++;
+                    else if (score <= 70) ranges['61-70']++;
+                    else if (score <= 80) ranges['71-80']++;
+                    else if (score <= 90) ranges['81-90']++;
+                    else ranges['91-100']++;
+                }
+            });
+
+            const ctx = document.getElementById('distributionChart');
+            if (!ctx) {
+                console.error('No se encontró el canvas distributionChart');
+                return;
+            }
+
+            // Destruir gráfico anterior si existe
+            const existingChart = Chart.getChart(ctx);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(ranges),
+                    datasets: [{
+                        label: 'Cantidad de Auditorías',
+                        data: Object.values(ranges),
+                        backgroundColor: [
+                            'rgba(192, 21, 47, 0.8)',
+                            'rgba(168, 75, 47, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(33, 128, 141, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: 'var(--color-text-secondary)',
+                                stepSize: 1
+                            },
+                            grid: { color: 'var(--color-border)' }
+                        },
+                        x: {
+                            ticks: { color: 'var(--color-text-secondary)' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable() {
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+
+            // Encabezados
+            let headHTML = '<tr>';
+            headers.forEach(header => {
+                headHTML += `<th>${header}</th>`;
+            });
+            headHTML += '</tr>';
+            tableHead.innerHTML = headHTML;
+
+            // Filas
+            let bodyHTML = '';
+            currentData.forEach(row => {
+                bodyHTML += '<tr>';
+                headers.forEach(header => {
+                    let cellValue = row[header];
+                    
+                    // Detectar y aplicar badges a columnas de estado/resultado
+                    if (header.toLowerCase().includes('estado') || 
+                        header.toLowerCase().includes('status') || 
+                        header.toLowerCase().includes('resultado')) {
+                        const valueStr = String(cellValue).toLowerCase();
+                        if (valueStr.includes('aprobad') || valueStr.includes('cumple') || valueStr.includes('exitoso')) {
+                            cellValue = `<span class="badge badge-success">${cellValue}</span>`;
+                        } else if (valueStr.includes('rechazad') || valueStr.includes('no cumple') || valueStr.includes('fallido')) {
+                            cellValue = `<span class="badge badge-error">${cellValue}</span>`;
+                        } else if (valueStr.includes('pendiente') || valueStr.includes('revision')) {
+                            cellValue = `<span class="badge badge-warning">${cellValue}</span>`;
+                        }
+                    }
+                    
+                    bodyHTML += `<td>${cellValue}</td>`;
+                });
+                bodyHTML += '</tr>';
+            });
+
+            tableBody.innerHTML = bodyHTML || '<tr><td colspan="100%" class="empty-state">No hay datos para mostrar</td></tr>';
+        }
+
+        function populateFilters() {
+            let options = '<option value="">Filtrar por columna...</option>';
+            headers.forEach(header => {
+                options += `<option value="${header}">${header}</option>`;
+            });
+            filterColumn.innerHTML = options;
+        }
+
+        // Búsqueda
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            currentData = originalData.filter(row => {
+                return Object.values(row).some(value => 
+                    String(value).toLowerCase().includes(searchTerm)
+                );
+            });
+            renderStats();
+            renderCharts();
+            renderTable();
+        });
+
+        // Filtro por columna
+        filterColumn.addEventListener('change', (e) => {
+            const column = e.target.value;
+            if (!column) {
+                currentData = [...originalData];
+            } else {
+                const uniqueValues = [...new Set(originalData.map(row => row[column]))];
+                const selectedValue = prompt(`Valores disponibles en "${column}":\n${uniqueValues.join(', ')}\n\nIngresa el valor a filtrar:`);
+                
+                if (selectedValue) {
+                    currentData = originalData.filter(row => 
+                        String(row[column]).toLowerCase().includes(selectedValue.toLowerCase())
+                    );
+                }
+            }
+            renderStats();
+            renderCharts();
+            renderTable();
+            searchBox.value = '';
+        });
+
+        // Exportar CSV
+        function exportToCSV() {
+            let csv = headers.join(',') + '\n';
+            currentData.forEach(row => {
+                const values = headers.map(header => {
+                    const value = String(row[header]);
+                    return value.includes(',') ? `"${value}"` : value;
+                });
+                csv += values.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dashboard_calidad_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
+
