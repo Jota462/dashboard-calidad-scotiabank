@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scotiabank | Dashboard de Calidad</title>
+  <link rel="icon" href="https://www.scotiabank.com/content/dam/scotiabank/corporate/images/favicon.ico"><!-- official favicon -->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Perplexity Design System */
+    :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-bg-3: rgba(34, 197, 94, 0.08);
+  --color-bg-4: rgba(239, 68, 68, 0.08);
+  --color-bg-5: rgba(147, 51, 234, 0.08);
+  --color-bg-6: rgba(249, 115, 22, 0.08);
+  --color-bg-7: rgba(236, 72, 153, 0.08);
+  --color-bg-8: rgba(6, 182, 212, 0.08);
+
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  --color-success-rgb: 33, 128, 141;
+  --color-error-rgb: 192, 21, 47;
+  --color-warning-rgb: 168, 75, 47;
+  --color-info-rgb: 98, 108, 113;
+
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+
+  --space-0: 0;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    --color-bg-1: rgba(29, 78, 216, 0.15);
+    --color-bg-2: rgba(180, 83, 9, 0.15);
+    --color-bg-3: rgba(21, 128, 61, 0.15);
+    --color-bg-4: rgba(185, 28, 28, 0.15);
+    --color-bg-5: rgba(107, 33, 168, 0.15);
+    --color-bg-6: rgba(194, 65, 12, 0.15);
+    --color-bg-7: rgba(190, 24, 93, 0.15);
+    --color-bg-8: rgba(8, 145, 178, 0.15);
+
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+    --color-success-rgb: var(--color-teal-300-rgb);
+    --color-error-rgb: var(--color-red-400-rgb);
+    --color-warning-rgb: var(--color-orange-400-rgb);
+    --color-info-rgb: var(--color-gray-300-rgb);
+  }
+}
+
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+}
+
+html {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+h5 { font-size: var(--font-size-lg); }
+h6 { font-size: var(--font-size-md); }
+
+p { margin: 0 0 var(--space-16) 0; }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover { color: var(--color-primary-hover); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-standard);
+  border: none;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.btn--primary:hover { background: var(--color-primary-hover); }
+.btn--primary:active { background: var(--color-primary-active); }
+
+.btn--secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover { background: var(--color-secondary-hover); }
+.btn--secondary:active { background: var(--color-secondary-active); }
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover { background: var(--color-secondary); }
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  outline: var(--focus-outline);
+}
+
+.flex { display: flex; }
+.gap-8 { gap: var(--space-8); }
+.gap-16 { gap: var(--space-16); }
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--space-16);
+  padding-left: var(--space-16);
+}
+
+@media (min-width: 640px) { .container { max-width: var(--container-sm); } }
+@media (min-width: 768px) { .container { max-width: var(--container-md); } }
+@media (min-width: 1024px) { .container { max-width: var(--container-lg); } }
+@media (min-width: 1280px) { .container { max-width: var(--container-xl); } }
+    /* ... (the rest of the system CSS remains unchanged) */
+    
+    /* CUSTOM DASHBOARD STYLES */
+    .kpi-card {
+      margin-bottom: var(--space-16);
+      padding: var(--space-16);
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-card-border);
+      display: flex;
+      flex-direction: column;
+      min-width: 150px;
+      gap: var(--space-8);
+      flex: 1;
+    }
+    .kpi-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .kpi-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: var(--radius-sm);
+      padding: 3px 10px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .badge-cumple {
+      background: rgba(var(--color-success-rgb), 0.15);
+      color: var(--color-success);
+      border: 1px solid rgba(var(--color-success-rgb), 0.25);
+    }
+    .badge-no {
+      background: rgba(var(--color-error-rgb), 0.2);
+      color: var(--color-error);
+      border: 1px solid rgba(var(--color-error-rgb), 0.3);
+    }
+    .chart-container {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-card-border);
+      margin-bottom: var(--space-16);
+      padding: var(--space-16);
+      min-height: 300px;
+    }
+    .dashboard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-16);
+    }
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        flex-direction: row;
+      }
+      .main-charts {
+        flex: 2;
+      }
+      .kpi-cards-bar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-16);
+      }
+    }
+    .search-export-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-8);
+      margin-bottom: var(--space-16);
+    }
+    .data-table-wrapper {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-card-border);
+      box-shadow: var(--shadow-xs);
+      padding: var(--space-16);
+      overflow-x: auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .saving-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .saving-message {
+      background: var(--color-surface);
+      padding: 24px 32px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      color: var(--color-text);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-base);
+    }
+    th, td {
+      padding: var(--space-8) var(--space-12);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    th {
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-semibold);
+      background: var(--color-bg-3);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="margin-top: 32px; margin-bottom: 32px;">
+    <header style="margin-bottom: 32px;">
+      <h1>Dashboard de Calidad — Scotiabank</h1>
+      <p class="kpi-label">Panel de resultados de auditoría de calidad por agente y criterio (datos reales)</p>
+    </header>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" style="display:none; background: var(--color-bg-1); border: 1px solid var(--color-primary); border-radius: var(--radius-base); padding: var(--space-12); margin-bottom: var(--space-16); color: var(--color-primary); font-weight: 500; text-align: center;">
+      <span style="display: inline-block; width: 16px; height: 16px; border: 2px solid var(--color-primary); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle;"></span>
+      Cargando datos desde Google Sheets...
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" style="display:none; background: var(--color-bg-3); border: 1px solid var(--color-success); border-radius: var(--radius-base); padding: var(--space-12); margin-bottom: var(--space-16); color: var(--color-success); font-weight: 500;">
+      ✓ Guardado en Google Sheets
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" style="display:none; background: rgba(var(--color-error-rgb), 0.1); border: 1px solid var(--color-error); border-radius: var(--radius-base); padding: var(--space-12); margin-bottom: var(--space-16); color: var(--color-error); font-weight: 500;">
+      <span id="errorMessageText"></span>
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connectionStatus" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--radius-full); background: var(--color-bg-3); border: 1px solid var(--color-success); margin-bottom: 16px; font-size: var(--font-size-sm);">
+      <span style="width: 8px; height: 8px; background: var(--color-success); border-radius: 50%; display: inline-block;"></span>
+      <span style="color: var(--color-success); font-weight: 500;">Conectado a Google Sheets</span>
+    </div>
+
+    <!-- Add Audit Form Toggle Button -->
+    <div style="margin-bottom: 24px;">
+      <button class="btn btn--primary" id="btnToggleForm">+ Agregar Nueva Auditoría</button>
+    </div>
+
+    <!-- Audit Form (Collapsible) -->
+    <div id="auditFormContainer" style="display:none; background: var(--color-surface); border: 1px solid var(--color-card-border); border-radius: var(--radius-lg); padding: var(--space-24); margin-bottom: var(--space-24); box-shadow: var(--shadow-md);">
+      <h3 style="margin-bottom: var(--space-24);">Nueva Auditoría</h3>
+      <form id="auditForm">
+        <!-- Basic Info Section -->
+        <div style="margin-bottom: var(--space-24);">
+          <h4 style="margin-bottom: var(--space-16); padding-bottom: var(--space-8); border-bottom: 1px solid var(--color-border);">Información Básica</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-16);">
+            <div>
+              <label class="form-label" for="ejecutivo">Ejecutivo *</label>
+              <input type="text" class="form-control" id="ejecutivo" required>
+            </div>
+            <div>
+              <label class="form-label" for="supervisor">Supervisor *</label>
+              <input type="text" class="form-control" id="supervisor" required>
+            </div>
+            <div>
+              <label class="form-label" for="campana">Campaña *</label>
+              <select class="form-control" id="campana" required>
+                <option value="">Seleccionar...</option>
+                <option value="Deepening">Deepening</option>
+                <option value="Préstamos">Préstamos</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="semana">Semana *</label>
+              <select class="form-control" id="semana" required>
+                <option value="">Seleccionar...</option>
+                <option value="1">Semana 1</option>
+                <option value="2">Semana 2</option>
+                <option value="3">Semana 3</option>
+                <option value="4">Semana 4</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="fechaHora">Fecha y Hora de llamada *</label>
+              <input type="datetime-local" class="form-control" id="fechaHora" required>
+            </div>
+            <div>
+              <label class="form-label" for="telefono">Teléfono evaluado *</label>
+              <input type="text" class="form-control" id="telefono" required>
+            </div>
+            <div>
+              <label class="form-label" for="tipoLlamada">Tipo de Llamada *</label>
+              <select class="form-control" id="tipoLlamada" required>
+                <option value="">Seleccionar...</option>
+                <option value="Venta">Venta</option>
+                <option value="No Venta">No Venta</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commercial Skills Section -->
+        <div style="margin-bottom: var(--space-24);">
+          <h4 style="margin-bottom: var(--space-16); padding-bottom: var(--space-8); border-bottom: 1px solid var(--color-border);">Evaluación de Habilidades Comerciales</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-16);">
+            <div>
+              <label class="form-label" for="sondeo">Sondea para rebatir al cliente *</label>
+              <select class="form-control" id="sondeo" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="rebate">Rebate objecciones o intenta persuadir *</label>
+              <select class="form-control" id="rebate" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="generaNecesidad">Genera alguna necesidad al cliente *</label>
+              <select class="form-control" id="generaNecesidad" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="cierreVenta">Aplica algún cierre de venta *</label>
+              <select class="form-control" id="cierreVenta" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="usaBaja">Utiliza la baja como argumento de venta *</label>
+              <select class="form-control" id="usaBaja" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="habilidadComercial">Habilidad Comercial *</label>
+              <select class="form-control" id="habilidadComercial" required>
+                <option value="">Seleccionar...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+                <option value="NA">NA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Sale Info Section -->
+        <div style="margin-bottom: var(--space-24);">
+          <h4 style="margin-bottom: var(--space-16); padding-bottom: var(--space-8); border-bottom: 1px solid var(--color-border);">Información de No Venta</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-16);">
+            <div>
+              <label class="form-label" for="motivoNoVenta">Motivo de la No Venta *</label>
+              <select class="form-control" id="motivoNoVenta" required>
+                <option value="">Seleccionar...</option>
+                <option value="No usa TC">No usa TC</option>
+                <option value="% de TEA, TCEA elevado">% de TEA, TCEA elevado</option>
+                <option value="Línea de crédito ofrecida no es atractiva para cliente">Línea de crédito ofrecida no es atractiva para cliente</option>
+                <option value="Cliente no presenta deudas, no tiene donde invertir">Cliente no presenta deudas, no tiene donde invertir</option>
+                <option value="Mala experiencia con el banco">Mala experiencia con el banco</option>
+                <option value="Tiene muchas TC">Tiene muchas TC</option>
+                <option value="Llamada agendada">Llamada agendada</option>
+                <option value="Cliente reacio, no da chance a explicación">Cliente reacio, no da chance a explicación</option>
+                <option value="Desea acercarse a la agencia">Desea acercarse a la agencia</option>
+                <option value="Gestión del agente no es la adecuada en relación a la habilidad comercial">Gestión del agente no es la adecuada en relación a la habilidad comercial</option>
+                <option value="Venta realizada">Venta realizada</option>
+                <option value="Cliente corta llamada sin motivo">Cliente corta llamada sin motivo</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="responsabilidadNoVenta">Responsabilidad No Venta *</label>
+              <select class="form-control" id="responsabilidadNoVenta" required>
+                <option value="">Seleccionar...</option>
+                <option value="Agente">Agente</option>
+                <option value="Banco">Banco</option>
+                <option value="Cliente">Cliente</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observations Section -->
+        <div style="margin-bottom: var(--space-24);">
+          <h4 style="margin-bottom: var(--space-16); padding-bottom: var(--space-8); border-bottom: 1px solid var(--color-border);">Observaciones</h4>
+          <div style="display: grid; grid-template-columns: 1fr; gap: var(--space-16);">
+            <div>
+              <label class="form-label" for="observacionesPositivas">Observaciones positivas</label>
+              <textarea class="form-control" id="observacionesPositivas" rows="3" style="resize: vertical;"></textarea>
+            </div>
+            <div>
+              <label class="form-label" for="observacionesMejora">Observaciones de mejora</label>
+              <textarea class="form-control" id="observacionesMejora" rows="3" style="resize: vertical;"></textarea>
+            </div>
+            <div>
+              <label class="form-label" for="recomendaciones">Recomendaciones Generales</label>
+              <textarea class="form-control" id="recomendaciones" rows="3" style="resize: vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div style="display: flex; gap: var(--space-12); justify-content: flex-end;">
+          <button type="button" class="btn btn--outline" id="btnCancelForm">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Guardar Auditoría</button>
+        </div>
+      </form>
+    </div>
+    <!-- KPIs -->
+    <div class="dashboard-grid">
+      <div class="main-charts">
+        <div class="flex gap-16" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <span class="kpi-label">Auditorías</span>
+            <span class="kpi-value" id="kpi-total-audits">1</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Cumplimiento global</span>
+            <span class="kpi-value" id="kpi-compliance-rate">75%</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Mejor criterio</span>
+            <span class="kpi-value" id="kpi-best-criteria">SONDEO, REBATE, HABILIDAD COMERCIAL</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">A mejorar</span>
+            <span class="kpi-value" id="kpi-worst-criteria">NECESIDA</span>
+          </div>
+        </div>
+        <div class="flex gap-16" style="flex-wrap:wrap;">
+          <div class="chart-container" style="flex:1; min-width: 320px;">
+            <h4 style="margin-bottom: 12px;">Distribución: CUMPLE / NO CUMPLE</h4>
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div class="chart-container" style="flex:1; min-width: 320px;">
+            <h4 style="margin-bottom: 12px;">Cumplimiento por agente</h4>
+            <canvas id="agentChart"></canvas>
+          </div>
+          <div class="chart-container" style="flex:1; min-width: 320px;">
+            <h4 style="margin-bottom: 12px;">Cumplimiento por criterio</h4>
+            <canvas id="criteriaChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Export Section -->
+    <div style="background: var(--color-bg-3); border: 1px solid var(--color-success); border-radius: var(--radius-lg); padding: var(--space-16); margin-bottom: var(--space-24);">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-12);">
+        <div>
+          <h4 style="margin-bottom: var(--space-4); color: var(--color-success);">📥 Descargar Datos</h4>
+          <p style="margin: 0; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Exporta todas las auditorías con todos los campos a formato CSV</p>
+        </div>
+        <button class="btn btn--primary" id="btnExport" style="white-space: nowrap;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Descargar CSV Completo
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Search Bar -->
+    <div class="search-export-bar">
+      <input type="text" class="form-control" style="max-width:240px" id="searchInput" placeholder="Buscar en tabla...">
+    </div>
+    <!-- Data Table -->
+    <div class="data-table-wrapper">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Semana</th>
+            <th>Ejecutivo</th>
+            <th>Supervisor</th>
+            <th>SONDEO</th>
+            <th>REBATE</th>
+            <th>HABILIDAD COMERCIAL</th>
+            <th>NECESIDA</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTbody">
+          <!-- Rows rendered by JS -->
+        </tbody>
+      </table>
+      <div id="tableNoResults" class="kpi-label" style="padding:20px;display:none;">No hay resultados.</div>
+    </div>
+  </div>
+  <script>
+    // Google Sheets Integration URLs
+    const GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTR4TBW_qQtsV-yHeyv_EJhixz5qW1AFxXyWLZYxEa95MrUWiqrLrpJuVdFAPmtFKUnvtQ1mO0muhNq/pub?gid=0&single=true&output=csv';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-PcygF-31oZxo7Pu80Ad9R5eaPbriZUSoJo-sfsr4MeJNSdsmJOE1LYiaf-e4Kg6nhw/exec';
+
+    // Datos reales desde Google Sheets
+    const HEADERS = ['Semana','Ejecutivo','Supervisor','SONDEO','REBATE','HABILIDAD COMERCIAL','NECESIDA'];
+    const CRITERIA_COLS = ['SONDEO','REBATE','HABILIDAD COMERCIAL','NECESIDA'];
+    let DATA = [];
+    let isConnected = false;
+
+    // ========== KPIs ==========
+    function getKpis(data) {
+      const totalAudits = data.length;
+      let cumple = 0, totalCriteria = 0, counts = {};
+      let best = [], worst = [];
+      let bestScore = -1, worstScore = 999;
+      CRITERIA_COLS.forEach(c=>{counts[c] = {cumple:0,no:0};});
+      
+      data.forEach(row => {
+        CRITERIA_COLS.forEach(col => {
+          totalCriteria++;
+          if(row[col] === 'CUMPLE') {
+            counts[col].cumple++;
+            cumple++;
+          } else {
+            counts[col].no++;
+          }
+        });
+      });
+      // Best and worst calculation
+      Object.entries(counts).forEach(([cri, v]) => {
+        if(v.cumple > bestScore) {
+          best = [cri]; bestScore = v.cumple;
+        } else if(v.cumple === bestScore) {
+          best.push(cri);
+        }
+        if(v.cumple < worstScore) {
+          worst = [cri]; worstScore = v.cumple;
+        } else if(v.cumple === worstScore) {
+          worst.push(cri);
+        }
+      });
+      return {
+        totalAudits,
+        complianceRate: totalCriteria? Math.round((cumple/totalCriteria)*100) : 0,
+        bestCriteria: best.map(hCName).join(', '),
+        worstCriteria: worst.map(hCName).join(', ')
+      };
+    }
+    function hCName(key) {
+      // label decorator if needed
+      return key.replace(/_/g,' ');
+    }
+    // Render KPIs
+    function renderKpis() {
+      const kpis = getKpis(DATA);
+      document.getElementById('kpi-total-audits').textContent = kpis.totalAudits;
+      document.getElementById('kpi-compliance-rate').textContent = kpis.complianceRate+"%";
+      document.getElementById('kpi-best-criteria').textContent = kpis.bestCriteria;
+      document.getElementById('kpi-worst-criteria').textContent = kpis.worstCriteria;
+    }
+
+    // ========== TABLE RENDER ========== 
+    function badge(val) {
+      if(val === 'CUMPLE') return '<span class="badge badge-cumple">CUMPLE</span>';
+      if(val === 'NO CUMPLE') return '<span class="badge badge-no">NO CUMPLE</span>';
+      return val;
+    }
+    function renderTable(data) {
+      const tbody = document.getElementById('resultsTbody');
+      tbody.innerHTML = '';
+      if (data.length === 0) {
+        document.getElementById('tableNoResults').style.display='block';
+      } else {
+        document.getElementById('tableNoResults').style.display='none';
+      }
+      data.forEach(row => {
+        tbody.innerHTML += '<tr>' +
+          HEADERS.map(h => {
+            if(CRITERIA_COLS.includes(h)) return `<td>${badge(row[h])}</td>`;
+            return `<td>${row[h]}</td>`;
+          }).join('') +
+        '</tr>';
+      });
+    }
+
+    // ========== SEARCH FUNCTION ==========
+    function filterTable(str) {
+      if(!str) return DATA;
+      const lower = str.trim().toLowerCase();
+      return DATA.filter(row => HEADERS.some(h =>
+        String(row[h]).toLowerCase().includes(lower)
+      ));
+    }
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const filtered = filterTable(e.target.value);
+      renderTable(filtered);
+      filteredTable = filtered;
+    });
+
+    // ========== EXPORT TO CSV ==========
+    // Complete list of all fields for export
+    const EXPORT_HEADERS = [
+      'Ejecutivo', 'Supervisor', 'Campaña', 'Semana', 'Fecha', 'Teléfono', 
+      'TipoLlamada', 'Sondeo', 'Rebate', 'GeneraNecesidad', 'CierreVenta', 
+      'UsaBaja', 'HabilidadComercial', 'MotivoNoVenta', 'ResponsabilidadNoVenta',
+      'ObservacionesPositivas', 'ObservacionesMejora', 'Recomendaciones',
+      'SONDEO', 'REBATE', 'HABILIDAD COMERCIAL', 'NECESIDA'
+    ];
+
+    function toCsvString(rows, headers) {
+      let res = headers.map(h=>`"${h}"`).join(',')+"\n";
+      rows.forEach(row => {
+        res += headers.map(h=>`"${String(row[h] || '').replace(/"/g,'""')}"`).join(',')+"\n";
+      });
+      return res;
+    }
+    
+    function exportCsv() {
+      // Show loading state
+      const btn = document.getElementById('btnExport');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span style="display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px;"></span>Generando CSV...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        const dataToExport = DATA.length > 0 ? DATA : [];
+        
+        if (dataToExport.length === 0) {
+          alert('No hay datos para exportar');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          return;
+        }
+        
+        const csv = toCsvString(dataToExport, EXPORT_HEADERS);
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const fecha = new Date().toISOString().split('T')[0];
+        a.download = `scotiabank-auditorias-${fecha}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(()=>{
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          
+          // Show success feedback
+          const successMsg = document.getElementById('successMessage');
+          successMsg.textContent = `✓ Archivo CSV descargado (${dataToExport.length} auditorías)`;
+          successMsg.style.display = 'block';
+          setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+        }, 150);
+      }, 300);
+    }
+    
+    document.getElementById('btnExport').addEventListener('click', exportCsv);
+
+    // ========== CHARTS ==========
+    // Chart palette
+    const chartColors = ['#1FB8CD','#FFC185','#B4413C','#ECEBD5','#5D878F','#DB4545','#D2BA4C','#964325','#944454','#13343B'];
+    // 1. Status chart — CUMPLE vs NO CUMPLE global
+    function statusData(data) {
+      let cumple = 0, no = 0;
+      data.forEach(r=>{CRITERIA_COLS.forEach(c=>{if(r[c]==='CUMPLE')cumple++;else no++;});});
+      return {cumple, no};
+    }
+    // 2. Agent compliance
+    function agentData(data) {
+      let byAgent = {};
+      data.forEach(r => {
+        if(!byAgent[r.Ejecutivo]) byAgent[r.Ejecutivo] = {total:0, cumple:0};
+        CRITERIA_COLS.forEach(c => {
+          byAgent[r.Ejecutivo].total++;
+          if(r[c]==='CUMPLE') byAgent[r.Ejecutivo].cumple++;
+        });
+      });
+      // { "Juan Perez": {total:4, cumple:3} }
+      return {
+        labels: Object.keys(byAgent),
+        datasets: [{
+          label: '% Cumplimiento',
+          data: Object.values(byAgent).map(a => Math.round((a.cumple/a.total)*100)),
+          backgroundColor: chartColors[0],
+        }]
+      };
+    }
+    // 3. By criteria — stacked bar
+    function criteriaData(data) {
+      let byCrit = {};
+      CRITERIA_COLS.forEach(c=>{ byCrit[c] = {cumple:0, no:0}; });
+      data.forEach(r => {CRITERIA_COLS.forEach(c => {(r[c]==='CUMPLE'? byCrit[c].cumple++:byCrit[c].no++);});});
+      return {
+        labels: CRITERIA_COLS.map(hCName),
+        datasets: [
+          {
+            label: 'CUMPLE',
+            data: CRITERIA_COLS.map(c => byCrit[c].cumple),
+            backgroundColor: chartColors[0],
+          },
+          {
+            label: 'NO CUMPLE',
+            data: CRITERIA_COLS.map(c => byCrit[c].no),
+            backgroundColor: chartColors[2],
+          }
+        ]
+      };
+    }
+    // Render Charts
+    function renderCharts() {
+      const status = statusData(DATA);
+      const statusChart = new Chart(document.getElementById('statusChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['CUMPLE','NO CUMPLE'],
+          datasets: [{ data: [status.cumple, status.no], backgroundColor:[chartColors[0],chartColors[2]] }]
+        },
+        options: {
+          plugins: {
+            legend: {position:'bottom'},
+            tooltip: {enabled:true},
+          },
+          cutout: '66%',
+          responsive:true,
+        }
+      });
+      chartInstances.push(statusChart);
+      // Agent
+      const agent = agentData(DATA);
+      const agentChart = new Chart(document.getElementById('agentChart').getContext('2d'), {
+        type: 'bar',
+        data: agent,
+        options: {
+          plugins:{legend:{display:false}},
+          scales:{
+            y: { beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' } },
+          },
+          responsive:true,
+        }
+      });
+      chartInstances.push(agentChart);
+      // Criteria
+      const criteria = criteriaData(DATA);
+      const criteriaChart = new Chart(document.getElementById('criteriaChart').getContext('2d'), {
+        type: 'bar',
+        data: criteria,
+        options: {
+          plugins: {legend: {position:'bottom'}},
+          scales:{
+            y: { beginAtZero:true, max: 1, ticks: {stepSize:1, callback: v=>v}},
+            x: { stacked:true },
+            y: { stacked:true },
+          },
+          responsive:true,
+        }
+      });
+      chartInstances.push(criteriaChart);
+    }
+
+    // ====== FORM HANDLING ======
+    const formContainer = document.getElementById('auditFormContainer');
+    const btnToggleForm = document.getElementById('btnToggleForm');
+    const btnCancelForm = document.getElementById('btnCancelForm');
+    const auditForm = document.getElementById('auditForm');
+    const successMessage = document.getElementById('successMessage');
+
+    // Toggle form visibility
+    btnToggleForm.addEventListener('click', function() {
+      if(formContainer.style.display === 'none') {
+        formContainer.style.display = 'block';
+        btnToggleForm.textContent = '− Cerrar Formulario';
+        formContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
+      } else {
+        formContainer.style.display = 'none';
+        btnToggleForm.textContent = '+ Agregar Nueva Auditoría';
+      }
+    });
+
+    // Cancel form
+    btnCancelForm.addEventListener('click', function() {
+      auditForm.reset();
+      formContainer.style.display = 'none';
+      btnToggleForm.textContent = '+ Agregar Nueva Auditoría';
+    });
+
+    // Convert SI/NO/NA to CUMPLE/NO CUMPLE
+    function convertToCumple(value) {
+      if(value === 'SI') return 'CUMPLE';
+      if(value === 'NO') return 'NO CUMPLE';
+      return 'NO CUMPLE'; // NA también se trata como NO CUMPLE
+    }
+
+    // Form submission
+    auditForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Get form values
+      const newAudit = {
+        Semana: parseInt(document.getElementById('semana').value),
+        Ejecutivo: document.getElementById('ejecutivo').value.trim(),
+        Supervisor: document.getElementById('supervisor').value.trim(),
+        Campaña: document.getElementById('campana').value,
+        Fecha: document.getElementById('fechaHora').value,
+        Teléfono: document.getElementById('telefono').value.trim(),
+        TipoLlamada: document.getElementById('tipoLlamada').value,
+        Sondeo: document.getElementById('sondeo').value,
+        Rebate: document.getElementById('rebate').value,
+        GeneraNecesidad: document.getElementById('generaNecesidad').value,
+        CierreVenta: document.getElementById('cierreVenta').value,
+        UsaBaja: document.getElementById('usaBaja').value,
+        HabilidadComercial: document.getElementById('habilidadComercial').value,
+        MotivoNoVenta: document.getElementById('motivoNoVenta').value,
+        ResponsabilidadNoVenta: document.getElementById('responsabilidadNoVenta').value,
+        ObservacionesPositivas: document.getElementById('observacionesPositivas').value.trim(),
+        ObservacionesMejora: document.getElementById('observacionesMejora').value.trim(),
+        Recomendaciones: document.getElementById('recomendaciones').value.trim(),
+        // Convert to table format
+        SONDEO: convertToCumple(document.getElementById('sondeo').value),
+        REBATE: convertToCumple(document.getElementById('rebate').value),
+        "HABILIDAD COMERCIAL": convertToCumple(document.getElementById('habilidadComercial').value),
+        NECESIDA: convertToCumple(document.getElementById('generaNecesidad').value)
+      };
+
+      // Save to Google Sheets
+      const success = await saveToGoogleSheets(newAudit);
+
+      // Reset form
+      auditForm.reset();
+      formContainer.style.display = 'none';
+      btnToggleForm.textContent = '+ Agregar Nueva Auditoría';
+
+      // Scroll to top
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+
+    // Store chart instances for destruction
+    let chartInstances = [];
+
+    function destroyCharts() {
+      chartInstances.forEach(chart => chart.destroy());
+      chartInstances = [];
+    }
+
+    // ====== GOOGLE SHEETS INTEGRATION ======
+
+    // Parse CSV data
+    function parseCSV(csvText) {
+      const lines = [];
+      let currentLine = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+        
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            currentLine += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === '\n' && !inQuotes) {
+          if (currentLine.trim()) {
+            lines.push(currentLine);
+          }
+          currentLine = '';
+        } else {
+          currentLine += char;
+        }
+      }
+      
+      if (currentLine.trim()) {
+        lines.push(currentLine);
+      }
+      
+      return lines.map(line => {
+        const fields = [];
+        let field = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          const nextChar = line[i + 1];
+          
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              field += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (char === ',' && !inQuotes) {
+            fields.push(field.trim());
+            field = '';
+          } else {
+            field += char;
+          }
+        }
+        fields.push(field.trim());
+        return fields;
+      });
+    }
+
+    // Load data from Google Sheets
+    async function loadDataFromGoogleSheets() {
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const errorMessage = document.getElementById('errorMessage');
+      const errorMessageText = document.getElementById('errorMessageText');
+      const connectionStatus = document.getElementById('connectionStatus');
+      
+      loadingIndicator.style.display = 'block';
+      errorMessage.style.display = 'none';
+      
+      try {
+        const response = await fetch(GOOGLE_SHEETS_CSV_URL);
+        
+        if (!response.ok) {
+          throw new Error('Error al cargar datos desde Google Sheets');
+        }
+        
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+        
+        if (rows.length < 2) {
+          // No data, just headers or empty
+          DATA = [];
+          isConnected = true;
+          updateConnectionStatus(true);
+          loadingIndicator.style.display = 'none';
+          refreshDashboard();
+          return;
+        }
+        
+        // Skip header row (index 0)
+        const dataRows = rows.slice(1);
+        DATA = dataRows.map(row => {
+          return {
+            Semana: parseInt(row[3]) || 0,
+            Ejecutivo: row[0] || '',
+            Supervisor: row[1] || '',
+            Campaña: row[2] || '',
+            Fecha: row[4] || '',
+            Teléfono: row[5] || '',
+            TipoLlamada: row[6] || '',
+            Sondeo: row[7] || '',
+            Rebate: row[8] || '',
+            GeneraNecesidad: row[9] || '',
+            CierreVenta: row[10] || '',
+            UsaBaja: row[11] || '',
+            HabilidadComercial: row[12] || '',
+            MotivoNoVenta: row[13] || '',
+            ResponsabilidadNoVenta: row[14] || '',
+            ObservacionesPositivas: row[15] || '',
+            ObservacionesMejora: row[16] || '',
+            Recomendaciones: row[17] || '',
+            SONDEO: convertToCumple(row[7]),
+            REBATE: convertToCumple(row[8]),
+            "HABILIDAD COMERCIAL": convertToCumple(row[12]),
+            NECESIDA: convertToCumple(row[9])
+          };
+        });
+        
+        isConnected = true;
+        updateConnectionStatus(true);
+        loadingIndicator.style.display = 'none';
+        refreshDashboard();
+        
+      } catch (error) {
+        console.error('Error loading from Google Sheets:', error);
+        isConnected = false;
+        updateConnectionStatus(false);
+        loadingIndicator.style.display = 'none';
+        errorMessageText.textContent = 'Error al cargar datos desde Google Sheets. Mostrando datos locales.';
+        errorMessage.style.display = 'block';
+        setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
+        
+        // Use local fallback data if available
+        if (DATA.length === 0) {
+          DATA = [];
+        }
+        refreshDashboard();
+      }
+    }
+
+    // Save audit to Google Sheets
+    async function saveToGoogleSheets(auditData) {
+      const savingOverlay = document.createElement('div');
+      savingOverlay.className = 'saving-overlay';
+      savingOverlay.innerHTML = `
+        <div class="saving-message">
+          <span style="display: inline-block; width: 20px; height: 20px; border: 3px solid var(--color-primary); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></span>
+          Guardando en Google Sheets...
+        </div>
+      `;
+      document.body.appendChild(savingOverlay);
+      
+      try {
+        const postData = {
+          ejecutivo: auditData.Ejecutivo,
+          supervisor: auditData.Supervisor,
+          campana: auditData.Campaña,
+          semana: auditData.Semana,
+          fechaHora: auditData.Fecha,
+          telefono: auditData.Teléfono,
+          tipoLlamada: auditData.TipoLlamada,
+          sondeo: auditData.Sondeo,
+          rebate: auditData.Rebate,
+          generaNecesidad: auditData.GeneraNecesidad,
+          cierreVenta: auditData.CierreVenta,
+          usaBaja: auditData.UsaBaja,
+          habilidadComercial: auditData.HabilidadComercial,
+          motivoNoVenta: auditData.MotivoNoVenta,
+          responsabilidad: auditData.ResponsabilidadNoVenta,
+          observacionesPositivas: auditData.ObservacionesPositivas,
+          observacionesMejora: auditData.ObservacionesMejora,
+          recomendaciones: auditData.Recomendaciones
+        };
+        
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData)
+        });
+        
+        // With no-cors mode, we can't read the response, so we assume success
+        document.body.removeChild(savingOverlay);
+        
+        // Show success message
+        const successMessage = document.getElementById('successMessage');
+        successMessage.style.display = 'block';
+        setTimeout(() => { successMessage.style.display = 'none'; }, 4000);
+        
+        // Reload data from Google Sheets after a short delay
+        setTimeout(() => {
+          loadDataFromGoogleSheets();
+        }, 1500);
+        
+        return true;
+        
+      } catch (error) {
+        console.error('Error saving to Google Sheets:', error);
+        document.body.removeChild(savingOverlay);
+        
+        const errorMessage = document.getElementById('errorMessage');
+        const errorMessageText = document.getElementById('errorMessageText');
+        errorMessageText.textContent = 'Error al guardar en Google Sheets. Por favor intenta nuevamente.';
+        errorMessage.style.display = 'block';
+        setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
+        
+        return false;
+      }
+    }
+
+    // Update connection status indicator
+    function updateConnectionStatus(connected) {
+      const connectionStatus = document.getElementById('connectionStatus');
+      if (connected) {
+        connectionStatus.innerHTML = `
+          <span style="width: 8px; height: 8px; background: var(--color-success); border-radius: 50%; display: inline-block;"></span>
+          <span style="color: var(--color-success); font-weight: 500;">Conectado a Google Sheets</span>
+        `;
+        connectionStatus.style.background = 'var(--color-bg-3)';
+        connectionStatus.style.borderColor = 'var(--color-success)';
+      } else {
+        connectionStatus.innerHTML = `
+          <span style="width: 8px; height: 8px; background: var(--color-error); border-radius: 50%; display: inline-block;"></span>
+          <span style="color: var(--color-error); font-weight: 500;">Desconectado de Google Sheets</span>
+        `;
+        connectionStatus.style.background = 'rgba(var(--color-error-rgb), 0.1)';
+        connectionStatus.style.borderColor = 'var(--color-error)';
+      }
+    }
+
+    // Refresh all dashboard components
+    function refreshDashboard() {
+      filteredTable = DATA;
+      renderKpis();
+      renderTable(DATA);
+      destroyCharts();
+      renderCharts();
+    }
+
+    // ====== INITIALIZE DASH ======
+    let filteredTable = DATA;
+    
+    // Load data from Google Sheets on page load
+    loadDataFromGoogleSheets();
+  </script>
+</body>
+</html>
