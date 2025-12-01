@@ -671,31 +671,11 @@
     let currentEjecutivo = '';
     let chartInstances = [];
 
-    function getRecordsAddedToday() {
-      const stored = localStorage.getItem('auditoriasHoyData');
-      if (stored) {
-        const data = JSON.parse(stored);
-        const today = new Date().toISOString().split('T')[0];
-        if (data.date === today) {
-          return data.count;
-        }
-      }
-      return 0;
-    }
-
-    function incrementRecordsCounter() {
-      const today = new Date().toISOString().split('T')[0];
-      const stored = localStorage.getItem('auditoriasHoyData');
-      let current = 0;
-      
-      if (stored) {
-        const data = JSON.parse(stored);
-        if (data.date === today) {
-          current = data.count;
-        }
-      }
-      
-      localStorage.setItem('auditoriasHoyData', JSON.stringify({ date: today, count: current + 1 }));
+    // Función para convertir fecha de YYYY-MM-DD a DD/MM/YYYY
+    function convertDateFormat(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
     }
 
     async function loadDataFromGoogleSheets() {
@@ -767,10 +747,11 @@
     function applyFilter() {
       currentEjecutivo = document.getElementById('ejecutivoFilter').value;
       const currentFecha = document.getElementById('fechaFilter').value;
+      const fechaFormateada = convertDateFormat(currentFecha);
       
       filteredData = allData.filter(d => {
         const matchEjecutivo = !currentEjecutivo || d['Ejecutivo'] === currentEjecutivo;
-        const matchFecha = !currentFecha || d['Fecha de Evaluación'] === currentFecha;
+        const matchFecha = !fechaFormateada || d['Fecha de Evaluación'] === fechaFormateada;
         return matchEjecutivo && matchFecha;
       });
       
@@ -801,7 +782,7 @@
 
       const filterText = currentEjecutivo ? `<span class="active-filter">Ejecutivo: ${currentEjecutivo}</span>` : '';
       const currentFecha = document.getElementById('fechaFilter').value;
-      const fechaText = currentFecha ? `<span class="active-filter">Fecha: ${currentFecha}</span>` : '';
+      const fechaText = currentFecha ? `<span class="active-filter">Fecha: ${convertDateFormat(currentFecha)}</span>` : '';
 
       document.getElementById('kpisContainer').innerHTML = `
         <div class="kpi-card">
@@ -825,11 +806,11 @@
 
       const container = document.getElementById('chartsContainer');
       container.innerHTML = `
-        <div class="chart-container"><canvas id="chart1"></canvas></div>
-        <div class="chart-container"><canvas id="chart2"></canvas></div>
-        <div class="chart-container"><canvas id="chart3"></canvas></div>
-        <div class="chart-container"><canvas id="chart4"></canvas></div>
-        <div class="chart-container"><canvas id="chart5"></canvas></div>
+        <div class="chart-container">anvas id="chart1"></canvas></div>
+        <div class="chart-container">anvas id="chart2"></canvas></div>
+        <div class="chart-container">anvas id="chart3"></canvas></div>
+        <div class="chart-container">anvas id="chart4"></canvas></div>
+        <div class="chart-container">anvas id="chart5"></canvas></div>
       `;
 
       if (filteredData.length === 0) return;
@@ -985,6 +966,13 @@
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData);
       
+      // Convertir la fecha al formato DD/MM/YYYY antes de enviar
+      if (data['Fecha de Evaluación']) {
+        data['Fecha de Evaluación'] = convertDateFormat(data['Fecha de Evaluación']);
+      }
+      
+      console.log('Datos a enviar:', data); // Para debugging
+      
       try {
         const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
           method: 'POST',
@@ -997,7 +985,6 @@
         e.target.reset();
         toggleForm();
         
-        renderKPIs();
         setTimeout(() => loadDataFromGoogleSheets(), 2000);
       } catch (error) {
         showMessage('⚠️ Error al guardar. Intenta nuevamente.', 'error');
@@ -1007,12 +994,25 @@
 
     function filterTable(query) {
       query = query.toLowerCase();
-      const baseData = currentEjecutivo ? allData.filter(d => d['Ejecutivo'] === currentEjecutivo) : allData;
+      const currentFecha = document.getElementById('fechaFilter').value;
+      const fechaFormateada = convertDateFormat(currentFecha);
+      
+      let baseData = allData;
+      
+      if (currentEjecutivo) {
+        baseData = baseData.filter(d => d['Ejecutivo'] === currentEjecutivo);
+      }
+      
+      if (fechaFormateada) {
+        baseData = baseData.filter(d => d['Fecha de Evaluación'] === fechaFormateada);
+      }
+      
       filteredData = baseData.filter(row => {
         return Object.values(row).some(val => 
           String(val).toLowerCase().includes(query)
         );
       });
+      
       renderTable();
     }
 
@@ -1049,3 +1049,4 @@
   </script>
 </body>
 </html>
+
