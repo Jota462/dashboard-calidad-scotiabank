@@ -25,13 +25,13 @@
       --color-red-400: rgba(255, 84, 89, 1);
       --color-red-500: rgba(192, 21, 47, 1);
       --color-orange-400: rgba(230, 129, 97, 1);
-
+      
       --color-brown-600-rgb: 94, 82, 64;
       --color-teal-500-rgb: 33, 128, 141;
       --color-slate-900-rgb: 19, 52, 59;
       --color-red-400-rgb: 255, 84, 89;
       --color-gray-400-rgb: 119, 124, 124;
-
+      
       --color-background: var(--color-cream-50);
       --color-surface: var(--color-cream-100);
       --color-text: var(--color-slate-900);
@@ -56,7 +56,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--color-background);
@@ -66,7 +66,7 @@
     }
 
     .container { max-width: 1400px; margin: 0 auto; }
-
+    
     header {
       background: var(--color-surface);
       padding: 24px;
@@ -486,6 +486,14 @@
           </div>
         </div>
 
+        <div class="section-title">Audio de la Llamada</div>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Enlace de Audio (Google Drive)</label>
+            <input type="text" name="audio" class="form-control" placeholder="Pega aquí el enlace compartido de Google Drive">
+          </div>
+        </div>
+
         <div class="section-title">Observaciones</div>
         <div class="form-grid">
           <div class="form-group">
@@ -533,7 +541,7 @@
   <script>
     var GOOGLE_SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTR4TBW_qQtsV-yHeyv_EJhixz5qW1AFxXyWLZYxEa95MrUWiqrLrpJuVdFAPmtFKUnvtQ1mO0muhNq/pub?gid=0&single=true&output=csv';
     var GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcYSCuNukl4XLzGDhG5iAvmuvcAZjuD7IYSglifnGa2HSdx3GY3aBI_Gwx5o16XEa6og/exec';
-
+    
     var allData = [];
     var filteredData = [];
     var currentEjecutivo = '';
@@ -552,11 +560,11 @@
       var opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       var fechaFormateada = ahora.toLocaleDateString('es-PE', opciones);
       fechaFormateada = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-
+      
       var horas = ahora.getHours().toString().padStart(2, '0');
       var minutos = ahora.getMinutes().toString().padStart(2, '0');
       var segundos = ahora.getSeconds().toString().padStart(2, '0');
-
+      
       document.getElementById('fechaActual').textContent = fechaFormateada;
       document.getElementById('horaActual').textContent = horas + ':' + minutos + ':' + segundos;
     }
@@ -572,7 +580,7 @@
         })
         .then(function(csvText) {
           var parsed = parseCSV(csvText);
-
+          
           if (parsed.length > 1) {
             var headers = parsed[0];
             allData = parsed.slice(1).filter(function(row) {
@@ -587,7 +595,7 @@
           } else {
             allData = [];
           }
-
+          
           filteredData = allData.slice();
           document.getElementById('loadingMessage').style.display = 'none';
           populateEjecutivoFilter();
@@ -607,7 +615,7 @@
         var values = [];
         var current = '';
         var inQuotes = false;
-
+        
         for (var i = 0; i < line.length; i++) {
           var char = line[i];
           if (char === '"') {
@@ -630,7 +638,7 @@
         if (d['Ejecutivo']) ejecutivosSet[d['Ejecutivo']] = true;
       });
       var ejecutivos = Object.keys(ejecutivosSet).sort();
-
+      
       var select = document.getElementById('ejecutivoFilter');
       select.innerHTML = '<option value="">Todos los ejecutivos</option>';
       ejecutivos.forEach(function(ej) {
@@ -643,7 +651,7 @@
 
     function applyFilter() {
       currentEjecutivo = document.getElementById('ejecutivoFilter').value;
-
+      
       if (currentEjecutivo) {
         filteredData = allData.filter(function(d) {
           return d['Ejecutivo'] === currentEjecutivo;
@@ -651,7 +659,7 @@
       } else {
         filteredData = allData.slice();
       }
-
+      
       renderDashboard();
     }
 
@@ -672,7 +680,7 @@
       var total = filteredData.length;
       var siCount = filteredData.filter(function(d) { return d['Habilidad comercial'] === 'SI'; }).length;
       var compliance = total > 0 ? Math.round((siCount / total) * 100) : 0;
-
+      
       var ventas = filteredData.filter(function(d) { return d['Tipo de Llamada'] === 'Venta'; }).length;
       var ventasRate = total > 0 ? Math.round((ventas / total) * 100) : 0;
 
@@ -690,11 +698,11 @@
 
       var container = document.getElementById('chartsContainer');
       container.innerHTML = 
-        '<div class="chart-container"><canvas id="chart1"></canvas></div>' +
-        '<div class="chart-container"><canvas id="chart2"></canvas></div>' +
-        '<div class="chart-container"><canvas id="chart3"></canvas></div>' +
-        '<div class="chart-container"><canvas id="chart4"></canvas></div>' +
-        '<div class="chart-container"><canvas id="chart5"></canvas></div>';
+        '<div class="chart-container">anvas id="chart1"></canvas></div>' +
+        '<div class="chart-container">anvas id="chart2"></canvas></div>' +
+        '<div class="chart-container">anvas id="chart3"></canvas></div>' +
+        '<div class="chart-container">anvas id="chart4"></canvas></div>' +
+        '<div class="chart-container">anvas id="chart5"></canvas></div>';
 
       if (filteredData.length === 0) return;
 
@@ -780,6 +788,14 @@
       document.getElementById('tableBody').innerHTML = rows;
     }
 
+    function buildAudioPlayer(audioUrl) {
+      if (!audioUrl) return '<em>Sin audio registrado</em>';
+      return '<audio controls style="width:100%; margin-top:8px;">' +
+             '<source src="' + audioUrl + '" type="audio/mpeg">' +
+             'Tu navegador no soporta audio HTML5.' +
+             '</audio>';
+    }
+
     function showDetail(index) {
       var row = filteredData[index];
       var headers = Object.keys(row);
@@ -787,9 +803,16 @@
 
       headers.forEach(function(header) {
         var value = row[header] || '';
-        if (value === 'SI') value = '<span class="badge badge-success">SI</span>';
-        if (value === 'NO') value = '<span class="badge badge-error">NO</span>';
-        html += '<div class="detail-row"><div class="detail-label">' + header + '</div><div class="detail-value">' + value + '</div></div>';
+        if (header === 'Audio') {
+          html += '<div class="detail-row"><div class="detail-label">Audio</div><div class="detail-value">' +
+                  buildAudioPlayer(value) +
+                  (value ? '<div style="margin-top:4px;font-size:11px;"><a href="' + value + '" target="_blank">Abrir en pestaña nueva</a></div>' : '') +
+                  '</div></div>';
+        } else {
+          if (value === 'SI') value = '<span class="badge badge-success">SI</span>';
+          if (value === 'NO') value = '<span class="badge badge-error">NO</span>';
+          html += '<div class="detail-row"><div class="detail-label">' + header + '</div><div class="detail-value">' + value + '</div></div>';
+        }
       });
 
       document.getElementById('modalBody').innerHTML = html;
@@ -808,16 +831,15 @@
     function submitForm(e) {
       e.preventDefault();
       showMessage('⏳ Guardando en Google Sheets...', 'success');
-
+      
       var formData = new FormData(e.target);
       var data = {};
       formData.forEach(function(value, key) { data[key] = value; });
-
-      // AGREGAR AUTOMÁTICAMENTE LA FECHA DE EVALUACIÓN
+      
       data.fechaEvaluacion = obtenerFechaEvaluacion();
-
+      
       console.log('Datos a enviar:', data);
-
+      
       fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -837,13 +859,13 @@
     function filterTable(query) {
       query = query.toLowerCase();
       var baseData = currentEjecutivo ? allData.filter(function(d) { return d['Ejecutivo'] === currentEjecutivo; }) : allData;
-
+      
       filteredData = baseData.filter(function(row) {
         return Object.values(row).some(function(val) {
           return String(val).toLowerCase().indexOf(query) !== -1;
         });
       });
-
+      
       renderTable();
     }
 
@@ -852,12 +874,12 @@
         alert('No hay datos para exportar');
         return;
       }
-
+      
       var headers = Object.keys(filteredData[0]);
       var csv = headers.join(',') + '\n' + filteredData.map(function(row) {
         return headers.map(function(h) { return '"' + (row[h] || '') + '"'; }).join(',');
       }).join('\n');
-
+      
       var blob = new Blob([csv], { type: 'text/csv' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
