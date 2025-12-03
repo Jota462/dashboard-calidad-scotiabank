@@ -780,26 +780,66 @@
       document.getElementById('tableBody').innerHTML = rows;
     }
 
-    function showDetail(index) {
-      var row = filteredData[index];
-      var headers = Object.keys(row);
-      var html = '';
+function showDetail(index) {
+  var row = filteredData[index];
+  var headers = Object.keys(row);
+  var html = '';
 
-      headers.forEach(function(header) {
-        var value = row[header] || '';
-        if (value === 'SI') value = '<span class="badge badge-success">SI</span>';
-        if (value === 'NO') value = '<span class="badge badge-error">NO</span>';
-        html += '<div class="detail-row"><div class="detail-label">' + header + '</div><div class="detail-value">' + value + '</div></div>';
-      });
-
-      document.getElementById('modalBody').innerHTML = html;
-      document.getElementById('detailModal').classList.add('show');
+  headers.forEach(function(header) {
+    var value = row[header] || '';
+    
+    // Manejo especial para el campo Audio
+    if (header === 'Audio' || header === 'audio') {
+      if (value && value.trim()) {
+        // Si contiene un enlace de Drive
+        if (value.includes('drive.google.com') || value.includes('docs.google.com')) {
+          var driveId = '';
+          
+          // Extraer ID de diferentes formatos de URL de Drive
+          if (value.includes('/d/')) {
+            var match = value.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            driveId = match ? match[1] : '';
+          } else if (value.includes('id=')) {
+            var match = value.match(/id=([a-zA-Z0-9-_]+)/);
+            driveId = match ? match[1] : '';
+          }
+          
+          if (driveId) {
+            // Crear botones para Abrir y Descargar
+            value = '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
+                    '<a href="https://drive.google.com/file/d/' + driveId + '/preview" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none; display:inline-block; padding:8px 12px; background:#32B8C6; color:white; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer;">▶ Escuchar en Drive</a>' +
+                    '<a href="https://drive.google.com/uc?export=download&id=' + driveId + '" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none; display:inline-block; padding:8px 12px; background:#2d5a67; color:white; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer;">📥 Descargar</a>' +
+                    '</div>';
+          }
+        } else {
+          // Si es un URL directo, mostrar reproductor nativo
+          if (value.endsWith('.mp3') || value.endsWith('.wav') || value.endsWith('.ogg')) {
+            value = '<audio controls style="width:280px; margin-top:8px;">' +
+                    '<source src="' + value + '" type="audio/mpeg">' +
+                    'Tu navegador no soporta audio.' +
+                    '</audio>';
+          } else {
+            value = '<a href="' + value + '" target="_blank" style="color:#32B8C6; text-decoration:underline;">🔗 ' + value + '</a>';
+          }
+        }
+      } else {
+        value = '<span style="color:#999;">—</span>';
+      }
+    } else {
+      // Manejo normal para otros campos
+      if (value === 'SI') value = '<span class="badge badge-success">SI</span>';
+      if (value === 'NO') value = '<span class="badge badge-error">NO</span>';
     }
 
-    function closeModal() {
-      document.getElementById('detailModal').classList.remove('show');
-    }
+    html += '<div class="detail-row">' +
+              '<div class="detail-label">' + header + '</div>' +
+              '<div class="detail-value">' + value + '</div>' +
+            '</div>';
+  });
 
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('detailModal').classList.add('show');
+}
     function toggleForm() {
       var form = document.getElementById('formSection');
       form.classList.toggle('collapsed');
